@@ -1,6 +1,12 @@
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
+import org.testng.Assert;
+
+import java.time.Duration;
 
 public class ValidCredsLogin {
 
@@ -17,8 +23,12 @@ public class ValidCredsLogin {
 
         //Partial matching using className
         //driver.findElement(By.xpath("//button[contains(@class,'submit')]")).click();
-
         //driver.findElement(By.xpath("//div[@class='forgot-pwd-btn-conainer']/button[@class='reset-pwd-btn']"));
 
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(5));
+        WebElement tag = wait.until(ExpectedConditions.visibilityOfElementLocated(By.tagName("p")));
+
+        String successFullLoginText = tag.getText();;
+        Assert.assertEquals(successFullLoginText, "You are successfully logged in.","Not logged in succesfully");
     }
 }
