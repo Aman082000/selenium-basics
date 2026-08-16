@@ -6,15 +6,29 @@ import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.testng.Assert;
+import org.testng.annotations.AfterMethod;
+import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.Test;
 
 import java.time.Duration;
 import java.util.List;
 
 public class Handling {
 
+    private static final Logger log = LoggerFactory.getLogger(Handling.class);
     static WebDriver driver = new ChromeDriver();
 
+    @BeforeMethod
+    public static void setup(){
+        //Thread.sleep(1000);
+        driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10));
+        driver.manage().window().maximize();
+    }
+
+    @Test
     public static void dropDowns(){
 
         //<select id="country">
@@ -63,6 +77,7 @@ public class Handling {
 
     }
 
+    @Test
     public static void checkBoxes(){
 
         //<input type="checkbox" id="terms">
@@ -117,6 +132,7 @@ public class Handling {
 
     }
 
+    @Test
     public static void radioButton(){
         //<input type="radio" name="gender" id="male" value="male">
         //<label for="male">Male</label>
@@ -195,6 +211,7 @@ public class Handling {
 
     }
 
+    @Test
     public static void alerts(){
 
         //Simple message alert
@@ -249,6 +266,84 @@ public class Handling {
         alert8.sendKeys("Aman");
         alert8.accept();
 
+    }
+
+    @Test
+    public static void waits(){
+
+        //Implicit wait - "Wait while looking for the element."
+        //Applies to every find that search for/find elements not to actions
+        driver.get("https://example.com/login");
+
+        driver.findElement(By.id("username")).sendKeys("test");
+        driver.findElement(By.id("password")).sendKeys("test");
+
+        //findElement - gives - no such element exception , findElements - gives - [] empty array
+
+        //Explicit wait - wait until a specific condition is met
+
+        //<input id="username" style="display:none;">
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+        wait.until(
+                ExpectedConditions.visibilityOfElementLocated(By.id("username"))
+        );
+        driver.findElement(By.id("username")).sendKeys("aman");
+
+        wait.until(
+                ExpectedConditions.presenceOfElementLocated(By.id("password"))
+        );
+        driver.findElement(By.id("password")).sendKeys("password");
+
+
+        //<button id="login" disabled>
+        //    Login
+        //</button>
+        WebElement login = wait.until(
+                ExpectedConditions.elementToBeClickable(By.id("login"))
+        );
+        login.sendKeys("value");
+
+        //<div id="message">
+        //    Processing...
+        //</div>
+        wait.until(ExpectedConditions.textToBePresentInElementLocated(By.id("message"), "Order Completed"));
+
+        //https://example.com/dashboard
+        driver.findElement(By.id("login")).click();
+        boolean completeUrl = wait.until(ExpectedConditions.urlContains("dashboard"));
+        Assert.assertTrue(completeUrl, "url isn't complete");
+
+        //<title>Employee Dashboard</title>
+        wait.until(ExpectedConditions.titleContains("Employee Dashboard"));
+        wait.until(ExpectedConditions.titleIs("Employee Dashboard"));
+
+        //alert("Order submitted successfully");
+        Alert alert = driver.switchTo().alert();
+        System.out.println(alert.getText());
+
+        alert.accept();
+
+
+
+
+        driver.quit();
+
+
+    }
+
+    @Test
+    public static void loggingIn(){
+        LoginPageUsingWaits loginPageUsingWaits = new LoginPageUsingWaits();
+        loginPageUsingWaits.enterUsername("aman");
+        loginPageUsingWaits.enterPassword("bhardwaj");
+        loginPageUsingWaits.clickLogin();
+    }
+
+    @AfterMethod
+    public void tearDown(){
+        if(driver!=null){
+            driver.quit();
+        }
     }
 
 
