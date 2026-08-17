@@ -1,11 +1,15 @@
 import org.openqa.selenium.By;
+import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.interactions.Action;
 import org.openqa.selenium.interactions.Actions;
 import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.BeforeTest;
+
+import java.security.Key;
 
 public class PerformAdvancedActions {
     static WebDriver driver = new ChromeDriver();
@@ -112,4 +116,95 @@ public class PerformAdvancedActions {
         driver2.quit();
 
     }
+
+    public static void doubleClickContextClick(){
+        WebElement button = driver.findElement(By.id("button"));
+        Actions actions = new Actions(driver);
+        actions.doubleClick(button)
+                .perform();
+
+        actions.moveToElement(button)
+                .doubleClick(button)
+                .perform();
+
+        actions.moveToElement(button)
+                .click()
+                .click()
+                .perform();
+
+        //Assignment
+        WebDriver webDriver = new ChromeDriver();
+        webDriver.get("doubleClick_demo_page");
+
+        WebElement buttonElement = webDriver.findElement(By.id("buttonElement"));
+
+        Actions actions1 = new Actions(webDriver);
+        actions1.doubleClick(buttonElement)
+                .perform();
+
+        WebElement verify = webDriver.findElement(By.id("verify"));
+        Assert.assertEquals(verify.getText(), "Double click","Double click wasn't successful");
+        Assert.assertTrue(verify.isDisplayed(), "Double click wasn't successful");
+
+        //Context click
+        actions.contextClick(
+                webDriver.findElement(By.id("context"))
+        ).perform();
+
+        webDriver.quit();
+
+
+
+
+    }
+
+    public static void keyboardActions(){
+        WebElement username = driver.findElement(By.id("username"));
+
+        Actions action = new Actions(driver);
+        action.click(username)
+                .sendKeys("aman")
+                .sendKeys(Keys.TAB)
+                .sendKeys("password")
+                .sendKeys(Keys.ENTER)
+                .perform();
+
+
+        //Assignment
+        WebDriver webDriver = new ChromeDriver();
+        webDriver.get("keyboard_action_demo_page_url");
+
+        WebElement textbox = webDriver.findElement(By.id("username"));
+        Actions action1 = new Actions(webDriver);
+
+        action1.click(textbox)
+                .sendKeys("Selenium")
+                .keyDown(Keys.CONTROL)
+                .sendKeys("a")
+                .keyUp(Keys.CONTROL)
+                .sendKeys(Keys.BACK_SPACE)
+                .sendKeys("Actions API")
+                .sendKeys(Keys.ENTER)
+                .perform();
+
+        Assert.assertEquals(textbox.getAttribute("value"), "Actions API", "Failed to enter keyboard values");
+        webDriver.quit();
+    }
+
+    public static void navigation(){
+        driver.get("url1");
+        driver.navigate().to("url2");
+
+        driver.navigate().back();
+        Assert.assertEquals(driver.getCurrentUrl(), "url1", "Url isn't right");
+
+        driver.navigate().forward();
+        Assert.assertEquals(driver.getCurrentUrl(), "url2", "Url isn't right");
+
+        driver.navigate().refresh();
+        Assert.assertEquals(driver.getCurrentUrl(), "url2", "Url isn't right");
+
+        driver.quit();
+    }
+
 }
