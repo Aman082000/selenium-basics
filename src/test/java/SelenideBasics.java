@@ -1,3 +1,4 @@
+import com.codeborne.selenide.Configuration;
 import com.codeborne.selenide.ElementsCollection;
 import com.codeborne.selenide.SelenideElement;
 import org.openqa.selenium.By;
@@ -7,13 +8,19 @@ import org.openqa.selenium.chrome.ChromeDriver;
 
 import java.util.List;
 
-import static com.codeborne.selenide.CollectionCondition.size;
+import static com.codeborne.selenide.CollectionCondition.*;
+import static com.codeborne.selenide.CollectionCondition.empty;
 import static com.codeborne.selenide.Condition.*;
 import static com.codeborne.selenide.Selectors.byText;
 import static com.codeborne.selenide.Selenide.*;
+import static org.testng.Assert.assertEquals;
+
 
 public class SelenideBasics {
     static WebDriver driver = new ChromeDriver();
+    static{
+        Configuration.timeout = 10000;
+    }
 
     public static void main(String[] args) {
 
@@ -254,5 +261,140 @@ public class SelenideBasics {
 
     }
 
+    public static void automaticWaiting(){
+        open("login_page_url");
 
+        $("#username").setValue("john");
+        $("#password").setValue("12345");
+        $("#submit").click();
+
+        $("#message").shouldHave(text("Welcome John"));
+
+    }
+
+    public static void collectionConditions(){
+        //<div class="product">Laptop</div>
+        //<div class="product">Mouse</div>
+        //<div class="product">Keyboard</div>
+        //<div class="product">Monitor</div>
+        //<div class="product">Phone</div>
+
+        //size()
+        //texts()
+        //textsInAnyOrder()
+        //empty
+        //not(empty)
+        //sizeGreaterThan()
+        //sizeLessThan()
+        //sizeGreaterThanOrEqual()
+        //sizeLessThanOrEqual()
+
+        $$(".product").shouldHave(size(5));
+        $$(".product").shouldHave(texts("Laptop", "Mouse", "Keyboard", "Monitor", "Phone"));
+        $$(".product").shouldHave(textsInAnyOrder("Mouse", "Keyboard", "Monitor", "Phone","Laptop"));
+        $$(".error-message").shouldBe(empty);
+//        $$(".error-message").shouldBe(not(empty));
+
+        $$(".product").shouldHave(sizeGreaterThan(2));
+        $$(".product").shouldHave(sizeLessThan(6));
+        $$(".product").shouldHave(sizeGreaterThanOrEqual(5));
+        $$(".product").shouldHave(sizeLessThanOrEqual(5));
+
+    }
+
+    public static void dropDownHandling(){
+        //<select id="country">
+        //    <option value="in">India</option>
+        //    <option value="us">United States</option>
+        //    <option value="uk">United Kingdom</option>
+        //</select>
+
+        //Visible text
+        $("#country").selectOption("India");
+        $("#country").selectOptionContainingText("Ind");
+        String selectedOption = $("#country").getSelectedOptionText();
+        System.out.println(selectedOption);
+
+        //Value
+        $("#country").selectOptionByValue("us");
+        String selectedValue = $("#country").getSelectedOptionValue();
+        System.out.println(selectedValue);
+
+        //Index
+        $("#country").selectOption(1);
+        $("#country").shouldHave(selectedText("India"));
+
+        //Multiple selections
+        //<select id="skills" multiple>
+        //    <option>Java</option>
+        //    <option>Selenium</option>
+        //    <option>Selenide</option>
+        //    <option>API</option>
+        //</select>
+        $("#skills").selectOption("Java");
+        $("#skills").selectOption("API");
+
+
+        //Assignment
+        //<select id="browser">
+        //    <option value="chrome">Google Chrome</option>
+        //    <option value="firefox">Mozilla Firefox</option>
+        //    <option value="edge">Microsoft Edge</option>
+        //</select>
+
+        $("#browser").selectOption("Mozilla Firefox");
+        assertEquals($("#browser").getSelectedOptionText(), "Mozilla Firefox");
+
+        $("#browser").selectOptionByValue("edge");
+        assertEquals( $("#browser").getSelectedOptionValue(), "edge");
+
+
+    }
+
+    public static void checkBox(){
+        //<input type="checkbox" id="java">
+        //<label for="java">Java</label>
+        //
+        //<input type="checkbox" id="selenium">
+        //<label for="selenium">Selenium</label>
+
+        $("#java").setSelected(true);
+        $("#selenium").setSelected(false);
+
+        $("#java").shouldBe(selected);
+        $("selenium").shouldNotBe(selected);
+
+    }
+
+    public static void radioButtons(){
+        //<input type="radio" name="gender" id="male" value="male">
+        //<label for="male">Male</label>
+        //
+        //<input type="radio" name="gender" id="female" value="female">
+        //<label for="female">Female</label>
+
+        $("#male").setSelected(true);
+        $("#male").shouldBe(selected);
+        $("#female").shouldNotBe(selected);
+
+        //Assignment
+        //<input type="checkbox" id="java">
+        //<input type="checkbox" id="selenium">
+        //
+        //<input type="radio" name="browser" id="chrome">
+        //<input type="radio" name="browser" id="firefox">
+
+        $("#java").setSelected(true);
+        $("#java").shouldBe(selected);
+
+        $("#selenium").shouldNotBe(selected);
+
+        $("#chrome").setSelected(true);
+        $("#chrome").shouldBe(selected);
+
+        $("#firefox").setSelected(true);
+        $("#firefox").shouldBe(selected);
+        $("#chrome").shouldNotBe(selected);
+
+    }
 }
